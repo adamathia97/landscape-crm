@@ -69,3 +69,20 @@
   color: var(--color-background);
   box-shadow: 0 0 8px rgba(0, 217, 230, 0.5);
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .th, .td {
+    padding: var(--spacing-sm);
+    font-size: 0.875rem;
+  }
+}
