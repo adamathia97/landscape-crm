@@ -154,6 +154,10 @@
   color: var(--color-text-primary);
 }
 
+.modalInput[type="date"] {
+  color-scheme: dark;
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;

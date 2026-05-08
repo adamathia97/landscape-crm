@@ -29,7 +29,8 @@ export async function POST(request: Request) {
       title: body.title || "New Job",
       client: body.client || "Unknown Client",
       date: body.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      status: body.status || "Lead", // Lead, Scheduled, Completed
+      dueDate: body.dueDate || "",
+      status: body.status || "Lead",
       createdAt: new Date().toISOString(),
     };
 

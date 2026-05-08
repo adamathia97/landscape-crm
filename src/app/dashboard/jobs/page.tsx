@@ -10,7 +10,9 @@ type Job = {
   title: string;
   client: string;
   date: string;
+  dueDate: string;
   status: string;
+  createdAt: string;
 };
 
 type Client = {
@@ -30,6 +32,7 @@ export default function JobsPage() {
   const [formData, setFormData] = useState({
     title: "",
     client: "",
+    dueDate: "",
     status: "Lead"
   });
 
@@ -55,6 +58,7 @@ export default function JobsPage() {
     setFormData({ 
       title: "", 
       client: clients.length > 0 ? clients[0].name : "", 
+      dueDate: "",
       status: "Lead" 
     });
     setIsModalOpen(true);
@@ -70,6 +74,7 @@ export default function JobsPage() {
         body: JSON.stringify({
           title: formData.title,
           client: formData.client,
+          dueDate: formData.dueDate,
           status: formData.status
         }),
       });
@@ -160,6 +165,17 @@ export default function JobsPage() {
                     ))}
                   </select>
                 )}
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Due Date</label>
+                <input 
+                  type="date" 
+                  className={globalStyles.modalInput}
+                  value={formData.dueDate}
+                  onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                />
               </div>
 
               <div>
@@ -279,8 +295,8 @@ export default function JobsPage() {
                               {job.client}
                             </div>
                             <div className={styles.jobDate}>
-                              <span>{job.id}</span>
-                              <span>{job.date}</span>
+                              <span>📅 {job.date}</span>
+                              {job.dueDate && <span style={{ color: "var(--color-warning)" }}>⏰ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
                           </div>
                         )}
@@ -328,8 +344,8 @@ export default function JobsPage() {
                               {job.client}
                             </div>
                             <div className={styles.jobDate}>
-                              <span>{job.id}</span>
-                              <span style={{ color: "var(--color-primary)" }}>{job.date}</span>
+                              <span>📅 {job.date}</span>
+                              {job.dueDate && <span style={{ color: "var(--color-warning)" }}>⏰ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
                           </div>
                         )}
@@ -377,8 +393,8 @@ export default function JobsPage() {
                               {job.client}
                             </div>
                             <div className={styles.jobDate}>
-                              <span>{job.id}</span>
-                              <span style={{ color: "var(--color-success)" }}>{job.date}</span>
+                              <span>📅 {job.date}</span>
+                              {job.dueDate && <span style={{ color: "var(--color-success)" }}>✅ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
                           </div>
                         )}
