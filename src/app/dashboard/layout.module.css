@@ -44,6 +44,16 @@
   color: var(--color-primary);
   margin-bottom: var(--spacing-xl);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.logoImg {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 10px rgba(0, 217, 230, 0.3);
 }
 
 .nav {

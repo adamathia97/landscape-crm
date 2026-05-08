@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
         <Link href="/" className={styles.logo} style={{ marginBottom: 0 }}>
+          <img src="/logo.png" alt="Logo" className={styles.logoImg} />
           TerraCRM
         </Link>
         <button 
@@ -33,6 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar Navigation */}
       <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.sidebarOpen : ""}`}>
         <Link href="/" className={styles.logo}>
+          <img src="/logo.png" alt="Logo" className={styles.logoImg} />
           TerraCRM
         </Link>
         <nav className={styles.nav}>
