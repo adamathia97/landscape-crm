@@ -15,6 +15,8 @@ type Job = {
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     fetchJobs();
@@ -33,15 +35,14 @@ export default function JobsPage() {
   };
 
   const handleAddJob = async () => {
-    const title = prompt("Enter Job Title:");
-    if (!title) return;
+    if (!inputValue) return;
 
     try {
       const res = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
+          title: inputValue,
           client: "New Client",
           status: "Lead"
         }),
@@ -50,6 +51,8 @@ export default function JobsPage() {
       if (data.job) {
         setJobs([...jobs, data.job]);
       }
+      setIsModalOpen(false);
+      setInputValue("");
     } catch (err) {
       console.error("Failed to add job", err);
     }
@@ -77,9 +80,29 @@ export default function JobsPage() {
 
   return (
     <div>
+      {isModalOpen && (
+        <div className={globalStyles.modalOverlay}>
+          <div className={globalStyles.modalContent}>
+            <h2 className={globalStyles.modalTitle}>Create New Job</h2>
+            <input 
+              type="text" 
+              className={globalStyles.modalInput}
+              placeholder="Enter job title..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              autoFocus
+            />
+            <div className={globalStyles.modalActions}>
+              <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleAddJob}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <h1 className={styles.title}>Job Tracker</h1>
-        <button className={globalStyles.button} onClick={handleAddJob}>
+        <button className={globalStyles.button} onClick={() => setIsModalOpen(true)}>
           + Create Job
         </button>
       </div>

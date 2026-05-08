@@ -15,6 +15,8 @@ type Client = {
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     fetchClients();
@@ -33,15 +35,14 @@ export default function ClientsPage() {
   };
 
   const handleAddClient = async () => {
-    const name = prompt("Enter Client Name:");
-    if (!name) return;
+    if (!inputValue) return;
 
     try {
       const res = await fetch("/api/clients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
+          name: inputValue,
           address: "New Address",
           phone: "555-0000",
           status: "Active"
@@ -51,6 +52,8 @@ export default function ClientsPage() {
       if (data.client) {
         setClients([...clients, data.client]);
       }
+      setIsModalOpen(false);
+      setInputValue("");
     } catch (err) {
       console.error("Failed to add client", err);
     }
@@ -58,9 +61,29 @@ export default function ClientsPage() {
 
   return (
     <div>
+      {isModalOpen && (
+        <div className={globalStyles.modalOverlay}>
+          <div className={globalStyles.modalContent}>
+            <h2 className={globalStyles.modalTitle}>Add New Client</h2>
+            <input 
+              type="text" 
+              className={globalStyles.modalInput}
+              placeholder="Enter client name..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              autoFocus
+            />
+            <div className={globalStyles.modalActions}>
+              <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleAddClient}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <h1 className={styles.title}>Client Database</h1>
-        <button className={globalStyles.button} onClick={handleAddClient}>
+        <button className={globalStyles.button} onClick={() => setIsModalOpen(true)}>
           + Add Client
         </button>
       </div>
