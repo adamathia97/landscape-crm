@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import styles from "./layout.module.css";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const links = [
     { href: "/dashboard", label: "Dashboard" },
@@ -15,7 +17,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
+      {/* Mobile Header */}
+      <div className={styles.mobileHeader}>
+        <Link href="/" className={styles.logo} style={{ marginBottom: 0 }}>
+          TerraCRM
+        </Link>
+        <button 
+          className={styles.menuButton} 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Sidebar Navigation */}
+      <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.sidebarOpen : ""}`}>
         <Link href="/" className={styles.logo}>
           TerraCRM
         </Link>
@@ -27,6 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={link.href}
                 href={link.href}
                 className={`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
@@ -37,7 +54,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           Log Out
         </button>
       </aside>
-      <main className={styles.mainContent}>{children}</main>
+
+      {/* Main Content & Footer */}
+      <main className={styles.mainContent}>
+        {children}
+        <footer className={styles.footer}>
+          <p>© {new Date().getFullYear()} TerraCRM. Built for Landscaping Businesses.</p>
+        </footer>
+      </main>
     </div>
   );
 }
