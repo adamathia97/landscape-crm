@@ -101,13 +101,13 @@ export default function Login() {
             <img src="/logo.png" alt="TerraCRM" style={{ width: "48px", height: "48px", borderRadius: "8px", boxShadow: "0 0 15px rgba(0, 217, 230, 0.4)" }} />
           </div>
           <h1 className={styles.title}>
-            {mode === "login" && "ACCESS TERMINAL"}
+            {mode === "login" && "SIGN IN"}
             {mode === "signup" && "CREATE ACCOUNT"}
             {mode === "confirm" && "VERIFY EMAIL"}
           </h1>
           <p className={styles.subtitle}>
-            {mode === "login" && "Enter credentials to access TerraCRM"}
-            {mode === "signup" && "Register a new operator account"}
+            {mode === "login" && "Sign in to manage your business"}
+            {mode === "signup" && "Set up your TerraCRM account"}
             {mode === "confirm" && "Enter the verification code sent to your email"}
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function Login() {
         {mode === "login" && (
           <form className={styles.form} onSubmit={handleLogin}>
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="email">Operator ID / Email</label>
+              <label className={styles.label} htmlFor="email">Email</label>
               <input
                 id="email"
                 type="email"
@@ -135,7 +135,7 @@ export default function Login() {
             </div>
 
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="password">Passcode</label>
+              <label className={styles.label} htmlFor="password">Password</label>
               <input
                 id="password"
                 type="password"
@@ -148,12 +148,12 @@ export default function Login() {
             </div>
 
             <button type="submit" className={styles.submitBtn} disabled={loading}>
-              {loading ? "Authenticating..." : "Initialize Connection"}
+              {loading ? "Signing In..." : "Sign In"}
             </button>
 
             <div className={styles.footer}>
-              No account? <button type="button" className={styles.link} onClick={() => { setMode("signup"); setError(""); }}>
-                Register New Operator
+              Don&apos;t have an account? <button type="button" className={styles.link} onClick={() => { setMode("signup"); setError(""); }}>
+                Sign Up
               </button>
             </div>
           </form>
@@ -163,7 +163,7 @@ export default function Login() {
         {mode === "signup" && (
           <form className={styles.form} onSubmit={handleSignUp}>
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="signup-email">Operator Email</label>
+              <label className={styles.label} htmlFor="signup-email">Email</label>
               <input
                 id="signup-email"
                 type="email"
@@ -176,7 +176,7 @@ export default function Login() {
             </div>
 
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="signup-password">Create Passcode</label>
+              <label className={styles.label} htmlFor="signup-password">Password</label>
               <input
                 id="signup-password"
                 type="password"
@@ -189,7 +189,7 @@ export default function Login() {
             </div>
 
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="confirm-password">Confirm Passcode</label>
+              <label className={styles.label} htmlFor="confirm-password">Confirm Password</label>
               <input
                 id="confirm-password"
                 type="password"
@@ -202,12 +202,12 @@ export default function Login() {
             </div>
 
             <button type="submit" className={styles.submitBtn} disabled={loading}>
-              {loading ? "Creating Account..." : "Register Operator"}
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
 
             <div className={styles.footer}>
-              Already registered? <button type="button" className={styles.link} onClick={() => { setMode("login"); setError(""); }}>
-                Access Terminal
+              Already have an account? <button type="button" className={styles.link} onClick={() => { setMode("login"); setError(""); }}>
+                Sign In
               </button>
             </div>
           </form>
@@ -244,7 +244,7 @@ export default function Login() {
 
         {mode === "login" && (
           <div className={styles.footer}>
-            Authorization required. <Link href="/" className={styles.link}>Return to Public Net</Link>
+            <Link href="/" className={styles.link}>← Back to Home</Link>
           </div>
         )}
       </div>
