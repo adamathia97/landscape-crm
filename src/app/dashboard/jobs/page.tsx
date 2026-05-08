@@ -14,33 +14,36 @@ type Job = {
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [clients, setClients] = useState<{name: string, id: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     title: "",
-    client: "New Client",
+    client: "",
     status: "Lead"
   });
 
   useEffect(() => {
-    fetchJobs();
+    Promise.all([
+      fetch("/api/jobs").then(res => res.json()),
+      fetch("/api/clients").then(res => res.json())
+    ]).then(([jobsData, clientsData]) => {
+      if (jobsData.jobs) setJobs(jobsData.jobs);
+      if (clientsData.clients) setClients(clientsData.clients);
+      setLoading(false);
+    }).catch(err => {
+      console.error("Failed to fetch data", err);
+      setLoading(false);
+    });
   }, []);
 
-  const fetchJobs = async () => {
-    try {
-      const res = await fetch("/api/jobs");
-      const data = await res.json();
-      if (data.jobs) setJobs(data.jobs);
-    } catch (err) {
-      console.error("Failed to fetch jobs", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const openCreateModal = () => {
-    setFormData({ title: "", client: "New Client", status: "Lead" });
+    setFormData({ 
+      title: "", 
+      client: clients.length > 0 ? clients[0].name : "", 
+      status: "Lead" 
+    });
     setIsModalOpen(true);
   };
 
@@ -110,14 +113,22 @@ export default function JobsPage() {
 
               <div>
                 <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Client Name</label>
-                <input 
-                  type="text" 
-                  className={globalStyles.modalInput}
-                  placeholder="John Doe"
-                  value={formData.client}
-                  onChange={(e) => setFormData({...formData, client: e.target.value})}
-                  style={{ marginBottom: 0, marginTop: "4px" }}
-                />
+                {clients.length === 0 ? (
+                  <div style={{ color: "var(--color-warning)", fontSize: "0.875rem", marginTop: "4px" }}>
+                    Please create a client first before adding a job.
+                  </div>
+                ) : (
+                  <select 
+                    className={globalStyles.modalInput}
+                    style={{ marginBottom: 0, marginTop: "4px" }}
+                    value={formData.client}
+                    onChange={(e) => setFormData({...formData, client: e.target.value})}
+                  >
+                    {clients.map(c => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
