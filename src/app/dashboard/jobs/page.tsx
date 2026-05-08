@@ -13,9 +13,17 @@ type Job = {
   status: string;
 };
 
+type Client = {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  status: string;
+};
+
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [clients, setClients] = useState<{name: string, id: string}[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -24,6 +32,10 @@ export default function JobsPage() {
     client: "",
     status: "Lead"
   });
+
+  // Client View Modal State
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -97,6 +109,14 @@ export default function JobsPage() {
     }
   };
 
+  const openClientDetails = (clientName: string) => {
+    const client = clients.find(c => c.name === clientName);
+    if (client) {
+      setSelectedClient(client);
+      setIsClientModalOpen(true);
+    }
+  };
+
   const leads = jobs.filter(j => j.status === "Lead");
   const scheduled = jobs.filter(j => j.status === "Scheduled");
   const completed = jobs.filter(j => j.status === "Completed");
@@ -165,6 +185,51 @@ export default function JobsPage() {
         </div>
       )}
 
+      {/* Client Details Modal */}
+      {isClientModalOpen && selectedClient && (
+        <div className={globalStyles.modalOverlay}>
+          <div className={globalStyles.modalContent}>
+            <h2 className={globalStyles.modalTitle}>Client Details</h2>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)", color: "var(--color-text-primary)" }}>
+              <div>
+                <strong style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem" }}>Name:</strong>
+                <div style={{ fontSize: "1.1rem", marginTop: "4px" }}>{selectedClient.name}</div>
+              </div>
+              
+              <div>
+                <strong style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem" }}>Phone:</strong>
+                <div style={{ fontSize: "1.1rem", marginTop: "4px" }}>
+                  <a href={`tel:${selectedClient.phone.replace(/\s+/g, '')}`} style={{ color: "var(--color-primary)", textDecoration: "none" }}>
+                    {selectedClient.phone}
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <strong style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem" }}>Address:</strong>
+                <div style={{ fontSize: "1.1rem", marginTop: "4px" }}>
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(selectedClient.address)}`} target="_blank" rel="noreferrer" style={{ color: "var(--color-primary)", textDecoration: "none" }}>
+                    {selectedClient.address}
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <strong style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem" }}>Status:</strong>
+                <div style={{ fontSize: "1.1rem", marginTop: "4px", color: selectedClient.status === "Active" ? "var(--color-success)" : "var(--color-text-primary)" }}>
+                  {selectedClient.status}
+                </div>
+              </div>
+            </div>
+
+            <div className={globalStyles.modalActions} style={{ marginTop: "var(--spacing-xl)" }}>
+              <button className={globalStyles.modalBtnCancel} onClick={() => setIsClientModalOpen(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <h1 className={styles.title}>Job Tracker</h1>
         <button className={globalStyles.button} onClick={openCreateModal}>
@@ -205,7 +270,14 @@ export default function JobsPage() {
                             }}
                           >
                             <div className={styles.jobTitle}>{job.title}</div>
-                            <div className={styles.jobClient}>{job.client}</div>
+                            <div 
+                              className={styles.jobClient} 
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={() => openClientDetails(job.client)}
+                              style={{ cursor: "pointer", textDecoration: "underline", color: "var(--color-primary)" }}
+                            >
+                              {job.client}
+                            </div>
                             <div className={styles.jobDate}>
                               <span>{job.id}</span>
                               <span>{job.date}</span>
@@ -247,7 +319,14 @@ export default function JobsPage() {
                             }}
                           >
                             <div className={styles.jobTitle}>{job.title}</div>
-                            <div className={styles.jobClient}>{job.client}</div>
+                            <div 
+                              className={styles.jobClient} 
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={() => openClientDetails(job.client)}
+                              style={{ cursor: "pointer", textDecoration: "underline", color: "var(--color-primary)" }}
+                            >
+                              {job.client}
+                            </div>
                             <div className={styles.jobDate}>
                               <span>{job.id}</span>
                               <span style={{ color: "var(--color-primary)" }}>{job.date}</span>
@@ -289,7 +368,14 @@ export default function JobsPage() {
                             }}
                           >
                             <div className={styles.jobTitle}>{job.title}</div>
-                            <div className={styles.jobClient}>{job.client}</div>
+                            <div 
+                              className={styles.jobClient} 
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={() => openClientDetails(job.client)}
+                              style={{ cursor: "pointer", textDecoration: "underline", color: "var(--color-primary)" }}
+                            >
+                              {job.client}
+                            </div>
                             <div className={styles.jobDate}>
                               <span>{job.id}</span>
                               <span style={{ color: "var(--color-success)" }}>{job.date}</span>
