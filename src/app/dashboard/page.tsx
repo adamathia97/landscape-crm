@@ -46,9 +46,6 @@ export default function Dashboard() {
     <div>
       <div className={styles.header}>
         <h1 className={styles.title}>Dashboard Overview</h1>
-        <button className={styles.button}>
-          + New Job
-        </button>
       </div>
 
       {loading ? (
