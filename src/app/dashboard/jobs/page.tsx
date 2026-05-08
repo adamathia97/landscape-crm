@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import styles from "./page.module.css";
 import globalStyles from "../../page.module.css";
 
@@ -70,19 +71,29 @@ export default function JobsPage() {
     }
   };
 
-  const moveJob = async (jobId: string, newStatus: string) => {
+  const handleDragEnd = async (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) return; // Dropped outside
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return; // Dropped in same spot
+
+    const newStatus = destination.droppableId;
+    
     // Optimistic UI update
-    setJobs(jobs.map(job => job.id === jobId ? { ...job, status: newStatus } : job));
+    setJobs(jobs.map(job => job.id === draggableId ? { ...job, status: newStatus } : job));
 
     try {
       await fetch("/api/jobs", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: jobId, status: newStatus }),
+        body: JSON.stringify({ id: draggableId, status: newStatus }),
       });
     } catch (err) {
       console.error("Failed to move job", err);
       // Revert on error could be added here
+      fetch("/api/jobs").then(res => res.json()).then(data => {
+        if (data.jobs) setJobs(data.jobs);
+      });
     }
   };
 
@@ -164,58 +175,137 @@ export default function JobsPage() {
       {loading ? (
         <div style={{textAlign: "center", padding: "2rem"}}>Loading data from AWS...</div>
       ) : (
-        <div className={styles.kanbanBoard}>
-          {/* Leads Column */}
-          <div className={styles.column}>
-            <h2 className={styles.columnTitle}>
-              Leads <span style={{ color: "var(--color-text-tertiary)" }}>{leads.length}</span>
-            </h2>
-            {leads.map(job => (
-              <div key={job.id} className={styles.jobCard} onClick={() => moveJob(job.id, "Scheduled")}>
-                <div className={styles.jobTitle}>{job.title}</div>
-                <div className={styles.jobClient}>{job.client}</div>
-                <div className={styles.jobDate}>
-                  <span>{job.id}</span>
-                  <span>{job.date}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className={styles.kanbanBoard}>
+            
+            {/* Leads Column */}
+            <div className={styles.column}>
+              <h2 className={styles.columnTitle}>
+                Leads <span style={{ color: "var(--color-text-tertiary)" }}>{leads.length}</span>
+              </h2>
+              <Droppable droppableId="Lead">
+                {(provided, snapshot) => (
+                  <div 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                    style={{ minHeight: "200px", paddingBottom: "20px" }}
+                  >
+                    {leads.map((job, index) => (
+                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div 
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={styles.jobCard}
+                            style={{
+                              ...provided.draggableProps.style,
+                              boxShadow: snapshot.isDragging ? "0 5px 15px rgba(0, 217, 230, 0.4)" : undefined,
+                              cursor: "grab",
+                            }}
+                          >
+                            <div className={styles.jobTitle}>{job.title}</div>
+                            <div className={styles.jobClient}>{job.client}</div>
+                            <div className={styles.jobDate}>
+                              <span>{job.id}</span>
+                              <span>{job.date}</span>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
 
-          {/* Scheduled Column */}
-          <div className={styles.column}>
-            <h2 className={styles.columnTitle}>
-              Scheduled <span style={{ color: "var(--color-primary)" }}>{scheduled.length}</span>
-            </h2>
-            {scheduled.map(job => (
-              <div key={job.id} className={styles.jobCard} onClick={() => moveJob(job.id, "Completed")}>
-                <div className={styles.jobTitle}>{job.title}</div>
-                <div className={styles.jobClient}>{job.client}</div>
-                <div className={styles.jobDate}>
-                  <span>{job.id}</span>
-                  <span style={{ color: "var(--color-primary)" }}>{job.date}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+            {/* Scheduled Column */}
+            <div className={styles.column}>
+              <h2 className={styles.columnTitle}>
+                Scheduled <span style={{ color: "var(--color-primary)" }}>{scheduled.length}</span>
+              </h2>
+              <Droppable droppableId="Scheduled">
+                {(provided, snapshot) => (
+                  <div 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                    style={{ minHeight: "200px", paddingBottom: "20px" }}
+                  >
+                    {scheduled.map((job, index) => (
+                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div 
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={styles.jobCard}
+                            style={{
+                              ...provided.draggableProps.style,
+                              boxShadow: snapshot.isDragging ? "0 5px 15px rgba(0, 217, 230, 0.4)" : undefined,
+                              cursor: "grab",
+                            }}
+                          >
+                            <div className={styles.jobTitle}>{job.title}</div>
+                            <div className={styles.jobClient}>{job.client}</div>
+                            <div className={styles.jobDate}>
+                              <span>{job.id}</span>
+                              <span style={{ color: "var(--color-primary)" }}>{job.date}</span>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
 
-          {/* Completed Column */}
-          <div className={styles.column}>
-            <h2 className={styles.columnTitle}>
-              Completed <span style={{ color: "var(--color-success)" }}>{completed.length}</span>
-            </h2>
-            {completed.map(job => (
-              <div key={job.id} className={styles.jobCard} onClick={() => moveJob(job.id, "Lead")}>
-                <div className={styles.jobTitle}>{job.title}</div>
-                <div className={styles.jobClient}>{job.client}</div>
-                <div className={styles.jobDate}>
-                  <span>{job.id}</span>
-                  <span style={{ color: "var(--color-success)" }}>{job.date}</span>
-                </div>
-              </div>
-            ))}
+            {/* Completed Column */}
+            <div className={styles.column}>
+              <h2 className={styles.columnTitle}>
+                Completed <span style={{ color: "var(--color-success)" }}>{completed.length}</span>
+              </h2>
+              <Droppable droppableId="Completed">
+                {(provided, snapshot) => (
+                  <div 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                    style={{ minHeight: "200px", paddingBottom: "20px" }}
+                  >
+                    {completed.map((job, index) => (
+                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div 
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={styles.jobCard}
+                            style={{
+                              ...provided.draggableProps.style,
+                              boxShadow: snapshot.isDragging ? "0 5px 15px rgba(32, 216, 102, 0.4)" : undefined,
+                              cursor: "grab",
+                            }}
+                          >
+                            <div className={styles.jobTitle}>{job.title}</div>
+                            <div className={styles.jobClient}>{job.client}</div>
+                            <div className={styles.jobDate}>
+                              <span>{job.id}</span>
+                              <span style={{ color: "var(--color-success)" }}>{job.date}</span>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+
           </div>
-        </div>
+        </DragDropContext>
       )}
     </div>
   );
