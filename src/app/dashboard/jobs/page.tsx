@@ -307,7 +307,7 @@ export default function JobsPage() {
                   <div 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    style={{ minHeight: "200px", paddingBottom: "20px" }}
+                    className={styles.columnBody}
                   >
                     {leads.map((job, index) => (
                       <Draggable key={job.id} draggableId={job.id} index={index}>
@@ -363,7 +363,7 @@ export default function JobsPage() {
                   <div 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    style={{ minHeight: "200px", paddingBottom: "20px" }}
+                    className={styles.columnBody}
                   >
                     {scheduled.map((job, index) => (
                       <Draggable key={job.id} draggableId={job.id} index={index}>
@@ -419,7 +419,7 @@ export default function JobsPage() {
                   <div 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    style={{ minHeight: "200px", paddingBottom: "20px" }}
+                    className={styles.columnBody}
                   >
                     {completed.map((job, index) => (
                       <Draggable key={job.id} draggableId={job.id} index={index}>

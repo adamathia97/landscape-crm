@@ -12,8 +12,9 @@
 
 .kanbanBoard {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-xl);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  height: calc(100vh - 180px);
 }
 
 .column {
@@ -23,7 +24,8 @@
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .columnTitle {
@@ -35,6 +37,16 @@
   align-items: center;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.columnBody {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-right: 4px;
 }
 
 .jobCard {
@@ -92,4 +104,15 @@
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: rgba(0, 217, 230, 0.05);
+}
+
+@media (max-width: 900px) {
+  .kanbanBoard {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .column {
+    max-height: 400px;
+  }
 }
