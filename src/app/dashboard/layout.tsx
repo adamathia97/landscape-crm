@@ -1,19 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import styles from "./layout.module.css";
+import { isAuthenticated, signOut } from "@/lib/auth";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    isAuthenticated().then((loggedIn) => {
+      if (!loggedIn) {
+        router.replace("/login");
+      } else {
+        setAuthChecked(true);
+      }
+    });
+  }, [router]);
+
+  const handleLogout = () => {
+    signOut();
+    router.replace("/login");
+  };
 
   const links = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/dashboard/clients", label: "Clients" },
     { href: "/dashboard/jobs", label: "Jobs" },
   ];
+
+  if (!authChecked) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-primary)" }}>
+        Verifying access...
+      </div>
+    );
+  }
 
   return (
     <div className={styles.layout}>
@@ -52,7 +78,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             );
           })}
         </nav>
-        <button className={`${styles.navLink} ${styles.logout}`} style={{ textAlign: "left", background: "none", border: "none", cursor: "pointer" }}>
+        <button 
+          className={`${styles.navLink} ${styles.logout}`} 
+          style={{ textAlign: "left", background: "none", border: "none", cursor: "pointer" }}
+          onClick={handleLogout}
+        >
           Log Out
         </button>
       </aside>

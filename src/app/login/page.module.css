@@ -98,8 +98,31 @@
 .link {
   color: var(--color-secondary);
   font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0;
+  text-decoration: none;
 }
 
 .link:hover {
   text-shadow: 0 0 5px var(--color-secondary);
+}
+
+.errorBox {
+  background: rgba(255, 60, 60, 0.1);
+  border: 1px solid rgba(255, 60, 60, 0.4);
+  color: #ff6b6b;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
