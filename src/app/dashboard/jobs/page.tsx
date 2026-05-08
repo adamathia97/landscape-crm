@@ -333,15 +333,15 @@ export default function JobsPage() {
                               {job.client}
                             </div>
                             <div className={styles.jobDate}>
-                              <span>📅 {job.date}</span>
-                              {job.dueDate && <span style={{ color: "var(--color-warning)" }}>⏰ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                              <span>{job.date}</span>
+                              {job.dueDate && <span style={{ color: "var(--color-warning)" }}>Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
                             <button 
                               className={styles.editBtn}
                               onPointerDown={(e) => e.stopPropagation()}
                               onClick={() => openEditModal(job)}
                             >
-                              ✏️ Edit
+                              Edit
                             </button>
                           </div>
                         )}
@@ -389,15 +389,15 @@ export default function JobsPage() {
                               {job.client}
                             </div>
                             <div className={styles.jobDate}>
-                              <span>📅 {job.date}</span>
-                              {job.dueDate && <span style={{ color: "var(--color-warning)" }}>⏰ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                              <span>{job.date}</span>
+                              {job.dueDate && <span style={{ color: "var(--color-warning)" }}>Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
                             <button 
                               className={styles.editBtn}
                               onPointerDown={(e) => e.stopPropagation()}
                               onClick={() => openEditModal(job)}
                             >
-                              ✏️ Edit
+                              Edit
                             </button>
                           </div>
                         )}
@@ -445,15 +445,15 @@ export default function JobsPage() {
                               {job.client}
                             </div>
                             <div className={styles.jobDate}>
-                              <span>📅 {job.date}</span>
-                              {job.dueDate && <span style={{ color: "var(--color-success)" }}>✅ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                              <span>{job.date}</span>
+                              {job.dueDate && <span style={{ color: "var(--color-success)" }}>Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
                             <button 
                               className={styles.editBtn}
                               onPointerDown={(e) => e.stopPropagation()}
                               onClick={() => openEditModal(job)}
                             >
-                              ✏️ Edit
+                              Edit
                             </button>
                           </div>
                         )}
