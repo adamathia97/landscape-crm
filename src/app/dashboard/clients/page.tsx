@@ -15,8 +15,19 @@ type Client = {
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [modalMode, setModalMode] = useState<"create" | "view">("create");
+  
+  // Form State
+  const [formData, setFormData] = useState({
+    name: "",
+    address: "",
+    countryCode: "+1",
+    phone: "",
+    status: "Active"
+  });
 
   useEffect(() => {
     fetchClients();
@@ -34,18 +45,47 @@ export default function ClientsPage() {
     }
   };
 
-  const handleAddClient = async () => {
-    if (!inputValue) return;
+  const openCreateModal = () => {
+    setModalMode("create");
+    setFormData({ name: "", address: "", countryCode: "+1", phone: "", status: "Active" });
+    setIsModalOpen(true);
+  };
+
+  const openViewModal = (client: Client) => {
+    setModalMode("view");
+    // Simple split for phone number if it has a country code, else default to +1
+    let cCode = "+1";
+    let pNum = client.phone;
+    if (client.phone.includes(" ")) {
+      const parts = client.phone.split(" ");
+      cCode = parts[0];
+      pNum = parts.slice(1).join(" ");
+    }
+    
+    setFormData({
+      name: client.name,
+      address: client.address,
+      countryCode: cCode,
+      phone: pNum,
+      status: client.status
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveClient = async () => {
+    if (!formData.name) return;
+
+    const fullPhone = `${formData.countryCode} ${formData.phone}`;
 
     try {
       const res = await fetch("/api/clients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: inputValue,
-          address: "New Address",
-          phone: "555-0000",
-          status: "Active"
+          name: formData.name,
+          address: formData.address,
+          phone: fullPhone,
+          status: formData.status
         }),
       });
       const data = await res.json();
@@ -53,7 +93,6 @@ export default function ClientsPage() {
         setClients([...clients, data.client]);
       }
       setIsModalOpen(false);
-      setInputValue("");
     } catch (err) {
       console.error("Failed to add client", err);
     }
@@ -64,18 +103,92 @@ export default function ClientsPage() {
       {isModalOpen && (
         <div className={globalStyles.modalOverlay}>
           <div className={globalStyles.modalContent}>
-            <h2 className={globalStyles.modalTitle}>Add New Client</h2>
-            <input 
-              type="text" 
-              className={globalStyles.modalInput}
-              placeholder="Enter client name..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              autoFocus
-            />
-            <div className={globalStyles.modalActions}>
-              <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleAddClient}>Save</button>
+            <h2 className={globalStyles.modalTitle}>
+              {modalMode === "create" ? "Add New Client" : "Client Details"}
+            </h2>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Client Name</label>
+                <input 
+                  type="text" 
+                  className={globalStyles.modalInput}
+                  placeholder="Enter client name..."
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  disabled={modalMode === "view"}
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Address</label>
+                <input 
+                  type="text" 
+                  className={globalStyles.modalInput}
+                  placeholder="123 Main St..."
+                  value={formData.address}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  disabled={modalMode === "view"}
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Phone Number</label>
+                <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+                  <select 
+                    className={globalStyles.modalInput}
+                    style={{ width: "80px", marginBottom: 0, padding: "var(--spacing-sm) 4px" }}
+                    value={formData.countryCode}
+                    onChange={(e) => setFormData({...formData, countryCode: e.target.value})}
+                    disabled={modalMode === "view"}
+                  >
+                    <option value="+1">+1 (US/CA)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+61">+61 (AU)</option>
+                    <option value="+91">+91 (IN)</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    className={globalStyles.modalInput}
+                    placeholder="555-0100"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    disabled={modalMode === "view"}
+                    style={{ marginBottom: 0, flex: 1 }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Status</label>
+                <select 
+                  className={globalStyles.modalInput}
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  disabled={modalMode === "view"}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Lead">Lead</option>
+                </select>
+                <p style={{ fontSize: "0.75rem", color: "var(--color-text-tertiary)", marginTop: "4px" }}>
+                  Active clients are currently receiving services. Inactive clients are past customers. Leads are prospective clients.
+                </p>
+              </div>
+            </div>
+
+            <div className={globalStyles.modalActions} style={{ marginTop: "var(--spacing-xl)" }}>
+              <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>
+                {modalMode === "create" ? "Cancel" : "Close"}
+              </button>
+              {modalMode === "create" && (
+                <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleSaveClient}>
+                  Save Client
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -83,7 +196,7 @@ export default function ClientsPage() {
 
       <div className={styles.header}>
         <h1 className={styles.title}>Client Database</h1>
-        <button className={globalStyles.button} onClick={() => setIsModalOpen(true)}>
+        <button className={globalStyles.button} onClick={openCreateModal}>
           + Add Client
         </button>
       </div>
@@ -113,14 +226,14 @@ export default function ClientsPage() {
                 <td className={styles.td}>{client.phone}</td>
                 <td className={styles.td}>
                   <span style={{ 
-                    color: client.status === "Active" ? "var(--color-success)" : "var(--color-text-tertiary)",
-                    textShadow: client.status === "Active" ? "0 0 5px rgba(32, 216, 102, 0.3)" : "none"
+                    color: client.status === "Active" ? "var(--color-success)" : 
+                           client.status === "Lead" ? "var(--color-primary)" : "var(--color-text-tertiary)",
                   }}>
                     {client.status}
                   </span>
                 </td>
                 <td className={styles.td}>
-                  <button className={styles.actionBtn}>View</button>
+                  <button className={styles.actionBtn} onClick={() => openViewModal(client)}>View</button>
                 </td>
               </tr>
             ))}

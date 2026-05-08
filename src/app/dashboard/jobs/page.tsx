@@ -16,7 +16,12 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  
+  const [formData, setFormData] = useState({
+    title: "",
+    client: "New Client",
+    status: "Lead"
+  });
 
   useEffect(() => {
     fetchJobs();
@@ -34,17 +39,22 @@ export default function JobsPage() {
     }
   };
 
+  const openCreateModal = () => {
+    setFormData({ title: "", client: "New Client", status: "Lead" });
+    setIsModalOpen(true);
+  };
+
   const handleAddJob = async () => {
-    if (!inputValue) return;
+    if (!formData.title) return;
 
     try {
       const res = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: inputValue,
-          client: "New Client",
-          status: "Lead"
+          title: formData.title,
+          client: formData.client,
+          status: formData.status
         }),
       });
       const data = await res.json();
@@ -52,7 +62,6 @@ export default function JobsPage() {
         setJobs([...jobs, data.job]);
       }
       setIsModalOpen(false);
-      setInputValue("");
     } catch (err) {
       console.error("Failed to add job", err);
     }
@@ -84,17 +93,51 @@ export default function JobsPage() {
         <div className={globalStyles.modalOverlay}>
           <div className={globalStyles.modalContent}>
             <h2 className={globalStyles.modalTitle}>Create New Job</h2>
-            <input 
-              type="text" 
-              className={globalStyles.modalInput}
-              placeholder="Enter job title..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              autoFocus
-            />
-            <div className={globalStyles.modalActions}>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Job Title</label>
+                <input 
+                  type="text" 
+                  className={globalStyles.modalInput}
+                  placeholder="e.g., Front Yard Landscaping"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  autoFocus
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Client Name</label>
+                <input 
+                  type="text" 
+                  className={globalStyles.modalInput}
+                  placeholder="John Doe"
+                  value={formData.client}
+                  onChange={(e) => setFormData({...formData, client: e.target.value})}
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Starting Status</label>
+                <select 
+                  className={globalStyles.modalInput}
+                  style={{ marginBottom: 0, marginTop: "4px" }}
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                >
+                  <option value="Lead">Lead</option>
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={globalStyles.modalActions} style={{ marginTop: "var(--spacing-xl)" }}>
               <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleAddJob}>Save</button>
+              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleAddJob}>Save Job</button>
             </div>
           </div>
         </div>
@@ -102,7 +145,7 @@ export default function JobsPage() {
 
       <div className={styles.header}>
         <h1 className={styles.title}>Job Tracker</h1>
-        <button className={globalStyles.button} onClick={() => setIsModalOpen(true)}>
+        <button className={globalStyles.button} onClick={openCreateModal}>
           + Create Job
         </button>
       </div>
