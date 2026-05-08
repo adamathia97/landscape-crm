@@ -1,0 +1,73 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--color-text-primary);
+}
+
+.kanbanBoard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.column {
+  background-color: rgba(19, 19, 32, 0.4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.columnTitle {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-xs);
+}
+
+.jobCard {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.jobCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(0, 217, 230, 0.1);
+  transform: translateY(-2px);
+}
+
+.jobTitle {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-primary);
+}
+
+.jobClient {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.jobDate {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  display: flex;
+  justify-content: space-between;
+}
