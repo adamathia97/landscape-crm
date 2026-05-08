@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ScanCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { ScanCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { docClient } from "@/lib/aws";
 
 const TABLE_NAME = "TerraCRM_Clients";
@@ -44,5 +44,42 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("DynamoDB POST Error:", error);
     return NextResponse.json({ error: "Failed to create client" }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, name, address, phone, status } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+
+    let updateExpr = "set";
+    const exprAttrNames: any = {};
+    const exprAttrValues: any = {};
+
+    if (name !== undefined) { updateExpr += " #n = :n,"; exprAttrNames["#n"] = "name"; exprAttrValues[":n"] = name; }
+    if (address !== undefined) { updateExpr += " #a = :a,"; exprAttrNames["#a"] = "address"; exprAttrValues[":a"] = address; }
+    if (phone !== undefined) { updateExpr += " #p = :p,"; exprAttrNames["#p"] = "phone"; exprAttrValues[":p"] = phone; }
+    if (status !== undefined) { updateExpr += " #s = :s,"; exprAttrNames["#s"] = "status"; exprAttrValues[":s"] = status; }
+
+    updateExpr = updateExpr.slice(0, -1); // Remove trailing comma
+
+    const command = new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { id },
+      UpdateExpression: updateExpr,
+      ExpressionAttributeNames: exprAttrNames,
+      ExpressionAttributeValues: exprAttrValues,
+      ReturnValues: "ALL_NEW",
+    });
+
+    const response = await docClient.send(command);
+    return NextResponse.json({ message: "Client updated", client: response.Attributes });
+  } catch (error) {
+    console.error("DynamoDB PATCH Error:", error);
+    return NextResponse.json({ error: "Failed to update client" }, { status: 500 });
   }
 }

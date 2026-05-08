@@ -18,7 +18,8 @@ export default function ClientsPage() {
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "view">("create");
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -47,12 +48,14 @@ export default function ClientsPage() {
 
   const openCreateModal = () => {
     setModalMode("create");
+    setSelectedClientId(null);
     setFormData({ name: "", address: "", countryCode: "+1", phone: "", status: "Active" });
     setIsModalOpen(true);
   };
 
-  const openViewModal = (client: Client) => {
-    setModalMode("view");
+  const openEditModal = (client: Client) => {
+    setModalMode("edit");
+    setSelectedClientId(client.id);
     // Simple split for phone number if it has a country code, else default to +1
     let cCode = "+1";
     let pNum = client.phone;
@@ -78,23 +81,41 @@ export default function ClientsPage() {
     const fullPhone = `${formData.countryCode} ${formData.phone}`;
 
     try {
-      const res = await fetch("/api/clients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          address: formData.address,
-          phone: fullPhone,
-          status: formData.status
-        }),
-      });
-      const data = await res.json();
-      if (data.client) {
-        setClients([...clients, data.client]);
+      if (modalMode === "create") {
+        const res = await fetch("/api/clients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            address: formData.address,
+            phone: fullPhone,
+            status: formData.status
+          }),
+        });
+        const data = await res.json();
+        if (data.client) {
+          setClients([...clients, data.client]);
+        }
+      } else if (modalMode === "edit" && selectedClientId) {
+        const res = await fetch("/api/clients", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: selectedClientId,
+            name: formData.name,
+            address: formData.address,
+            phone: fullPhone,
+            status: formData.status
+          }),
+        });
+        const data = await res.json();
+        if (data.client) {
+          setClients(clients.map(c => c.id === selectedClientId ? data.client : c));
+        }
       }
       setIsModalOpen(false);
     } catch (err) {
-      console.error("Failed to add client", err);
+      console.error("Failed to save client", err);
     }
   };
 
@@ -104,7 +125,7 @@ export default function ClientsPage() {
         <div className={globalStyles.modalOverlay}>
           <div className={globalStyles.modalContent}>
             <h2 className={globalStyles.modalTitle}>
-              {modalMode === "create" ? "Add New Client" : "Client Details"}
+              {modalMode === "create" ? "Add New Client" : "Edit Client"}
             </h2>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
@@ -116,7 +137,6 @@ export default function ClientsPage() {
                   placeholder="Enter client name..."
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  disabled={modalMode === "view"}
                   style={{ marginBottom: 0, marginTop: "4px" }}
                 />
               </div>
@@ -129,7 +149,6 @@ export default function ClientsPage() {
                   placeholder="123 Main St..."
                   value={formData.address}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  disabled={modalMode === "view"}
                   style={{ marginBottom: 0, marginTop: "4px" }}
                 />
               </div>
@@ -139,10 +158,9 @@ export default function ClientsPage() {
                 <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
                   <select 
                     className={globalStyles.modalInput}
-                    style={{ width: "80px", marginBottom: 0, padding: "var(--spacing-sm) 4px" }}
+                    style={{ width: "115px", marginBottom: 0, padding: "var(--spacing-sm) 4px" }}
                     value={formData.countryCode}
                     onChange={(e) => setFormData({...formData, countryCode: e.target.value})}
-                    disabled={modalMode === "view"}
                   >
                     <option value="+1">+1 (US/CA)</option>
                     <option value="+44">+44 (UK)</option>
@@ -155,7 +173,6 @@ export default function ClientsPage() {
                     placeholder="555-0100"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    disabled={modalMode === "view"}
                     style={{ marginBottom: 0, flex: 1 }}
                   />
                 </div>
@@ -168,7 +185,6 @@ export default function ClientsPage() {
                   style={{ marginBottom: 0, marginTop: "4px" }}
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  disabled={modalMode === "view"}
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -182,13 +198,11 @@ export default function ClientsPage() {
 
             <div className={globalStyles.modalActions} style={{ marginTop: "var(--spacing-xl)" }}>
               <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>
-                {modalMode === "create" ? "Cancel" : "Close"}
+                Cancel
               </button>
-              {modalMode === "create" && (
-                <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleSaveClient}>
-                  Save Client
-                </button>
-              )}
+              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleSaveClient}>
+                {modalMode === "create" ? "Save Client" : "Save Changes"}
+              </button>
             </div>
           </div>
         </div>
@@ -233,7 +247,7 @@ export default function ClientsPage() {
                   </span>
                 </td>
                 <td className={styles.td}>
-                  <button className={styles.actionBtn} onClick={() => openViewModal(client)}>View</button>
+                  <button className={styles.actionBtn} onClick={() => openEditModal(client)}>Edit</button>
                 </td>
               </tr>
             ))}

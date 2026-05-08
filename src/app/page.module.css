@@ -149,6 +149,11 @@
   box-shadow: 0 0 8px rgba(0, 217, 230, 0.2);
 }
 
+.modalInput option {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;
