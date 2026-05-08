@@ -70,4 +70,26 @@
   color: var(--color-text-tertiary);
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.editBtn {
+  margin-top: var(--spacing-sm);
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-tertiary);
+  padding: 4px 0;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family-sans);
+}
+
+.editBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(0, 217, 230, 0.05);
 }

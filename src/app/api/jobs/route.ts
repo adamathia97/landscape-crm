@@ -50,18 +50,29 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, status } = body;
+    const { id, title, client, status, dueDate } = body;
 
-    if (!id || !status) {
-      return NextResponse.json({ error: "Missing id or status" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
+
+    let updateExpr = "set";
+    const exprAttrNames: any = {};
+    const exprAttrValues: any = {};
+
+    if (title !== undefined) { updateExpr += " #t = :t,"; exprAttrNames["#t"] = "title"; exprAttrValues[":t"] = title; }
+    if (client !== undefined) { updateExpr += " #c = :c,"; exprAttrNames["#c"] = "client"; exprAttrValues[":c"] = client; }
+    if (status !== undefined) { updateExpr += " #s = :s,"; exprAttrNames["#s"] = "status"; exprAttrValues[":s"] = status; }
+    if (dueDate !== undefined) { updateExpr += " #d = :d,"; exprAttrNames["#d"] = "dueDate"; exprAttrValues[":d"] = dueDate; }
+
+    updateExpr = updateExpr.slice(0, -1); // Remove trailing comma
 
     const command = new UpdateCommand({
       TableName: TABLE_NAME,
       Key: { id },
-      UpdateExpression: "set #s = :status",
-      ExpressionAttributeNames: { "#s": "status" },
-      ExpressionAttributeValues: { ":status": status },
+      UpdateExpression: updateExpr,
+      ExpressionAttributeNames: exprAttrNames,
+      ExpressionAttributeValues: exprAttrValues,
       ReturnValues: "ALL_NEW",
     });
 

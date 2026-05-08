@@ -28,6 +28,8 @@ export default function JobsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -55,6 +57,8 @@ export default function JobsPage() {
   }, []);
 
   const openCreateModal = () => {
+    setModalMode("create");
+    setSelectedJobId(null);
     setFormData({ 
       title: "", 
       client: clients.length > 0 ? clients[0].name : "", 
@@ -64,27 +68,57 @@ export default function JobsPage() {
     setIsModalOpen(true);
   };
 
-  const handleAddJob = async () => {
+  const openEditModal = (job: Job) => {
+    setModalMode("edit");
+    setSelectedJobId(job.id);
+    setFormData({
+      title: job.title,
+      client: job.client,
+      dueDate: job.dueDate || "",
+      status: job.status
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveJob = async () => {
     if (!formData.title) return;
 
     try {
-      const res = await fetch("/api/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formData.title,
-          client: formData.client,
-          dueDate: formData.dueDate,
-          status: formData.status
-        }),
-      });
-      const data = await res.json();
-      if (data.job) {
-        setJobs([...jobs, data.job]);
+      if (modalMode === "create") {
+        const res = await fetch("/api/jobs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: formData.title,
+            client: formData.client,
+            dueDate: formData.dueDate,
+            status: formData.status
+          }),
+        });
+        const data = await res.json();
+        if (data.job) {
+          setJobs([...jobs, data.job]);
+        }
+      } else if (modalMode === "edit" && selectedJobId) {
+        const res = await fetch("/api/jobs", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: selectedJobId,
+            title: formData.title,
+            client: formData.client,
+            dueDate: formData.dueDate,
+            status: formData.status
+          }),
+        });
+        const data = await res.json();
+        if (data.job) {
+          setJobs(jobs.map(j => j.id === selectedJobId ? data.job : j));
+        }
       }
       setIsModalOpen(false);
     } catch (err) {
-      console.error("Failed to add job", err);
+      console.error("Failed to save job", err);
     }
   };
 
@@ -131,7 +165,9 @@ export default function JobsPage() {
       {isModalOpen && (
         <div className={globalStyles.modalOverlay}>
           <div className={globalStyles.modalContent}>
-            <h2 className={globalStyles.modalTitle}>Create New Job</h2>
+            <h2 className={globalStyles.modalTitle}>
+              {modalMode === "create" ? "Create New Job" : "Edit Job"}
+            </h2>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
               <div>
@@ -179,7 +215,7 @@ export default function JobsPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Starting Status</label>
+                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Status</label>
                 <select 
                   className={globalStyles.modalInput}
                   style={{ marginBottom: 0, marginTop: "4px" }}
@@ -195,7 +231,9 @@ export default function JobsPage() {
 
             <div className={globalStyles.modalActions} style={{ marginTop: "var(--spacing-xl)" }}>
               <button className={globalStyles.modalBtnCancel} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleAddJob}>Save Job</button>
+              <button className={globalStyles.button} style={{padding: "var(--spacing-sm) var(--spacing-md)"}} onClick={handleSaveJob}>
+                {modalMode === "create" ? "Save Job" : "Save Changes"}
+              </button>
             </div>
           </div>
         </div>
@@ -298,6 +336,13 @@ export default function JobsPage() {
                               <span>📅 {job.date}</span>
                               {job.dueDate && <span style={{ color: "var(--color-warning)" }}>⏰ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
+                            <button 
+                              className={styles.editBtn}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={() => openEditModal(job)}
+                            >
+                              ✏️ Edit
+                            </button>
                           </div>
                         )}
                       </Draggable>
@@ -347,6 +392,13 @@ export default function JobsPage() {
                               <span>📅 {job.date}</span>
                               {job.dueDate && <span style={{ color: "var(--color-warning)" }}>⏰ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
+                            <button 
+                              className={styles.editBtn}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={() => openEditModal(job)}
+                            >
+                              ✏️ Edit
+                            </button>
                           </div>
                         )}
                       </Draggable>
@@ -396,6 +448,13 @@ export default function JobsPage() {
                               <span>📅 {job.date}</span>
                               {job.dueDate && <span style={{ color: "var(--color-success)" }}>✅ Due: {new Date(job.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                             </div>
+                            <button 
+                              className={styles.editBtn}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={() => openEditModal(job)}
+                            >
+                              ✏️ Edit
+                            </button>
                           </div>
                         )}
                       </Draggable>
