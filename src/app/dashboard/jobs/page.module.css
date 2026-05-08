@@ -107,6 +107,16 @@
 }
 
 @media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
   .kanbanBoard {
     grid-template-columns: 1fr;
     height: auto;
