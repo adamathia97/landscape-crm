@@ -28,6 +28,9 @@ export async function POST(request: Request) {
       id,
       title: body.title || "New Job",
       client: body.client || "Unknown Client",
+      assignee: body.assignee || "",
+      budget: body.budget || "",
+      progress: body.progress || 0,
       date: body.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       dueDate: body.dueDate || "",
       status: body.status || "Lead",
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, title, client, status, dueDate } = body;
+    const { id, title, client, status, dueDate, assignee, budget, progress } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing id" }, { status: 400 });
@@ -64,6 +67,9 @@ export async function PATCH(request: Request) {
     if (client !== undefined) { updateExpr += " #c = :c,"; exprAttrNames["#c"] = "client"; exprAttrValues[":c"] = client; }
     if (status !== undefined) { updateExpr += " #s = :s,"; exprAttrNames["#s"] = "status"; exprAttrValues[":s"] = status; }
     if (dueDate !== undefined) { updateExpr += " #d = :d,"; exprAttrNames["#d"] = "dueDate"; exprAttrValues[":d"] = dueDate; }
+    if (assignee !== undefined) { updateExpr += " #a = :a,"; exprAttrNames["#a"] = "assignee"; exprAttrValues[":a"] = assignee; }
+    if (budget !== undefined) { updateExpr += " #b = :b,"; exprAttrNames["#b"] = "budget"; exprAttrValues[":b"] = budget; }
+    if (progress !== undefined) { updateExpr += " #p = :p,"; exprAttrNames["#p"] = "progress"; exprAttrValues[":p"] = progress; }
 
     updateExpr = updateExpr.slice(0, -1); // Remove trailing comma
 
@@ -81,5 +87,29 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.error("DynamoDB PATCH Error:", error);
     return NextResponse.json({ error: "Failed to update job" }, { status: 500 });
+  }
+}
+
+import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
+
+export async function DELETE(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+
+    const command = new DeleteCommand({
+      TableName: TABLE_NAME,
+      Key: { id },
+    });
+
+    await docClient.send(command);
+    return NextResponse.json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.error("DynamoDB DELETE Error:", error);
+    return NextResponse.json({ error: "Failed to delete job" }, { status: 500 });
   }
 }

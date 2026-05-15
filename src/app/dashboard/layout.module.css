@@ -75,7 +75,8 @@
 
 .navLink {
   padding: 10px 16px;
-  border-radius: var(--radius-md);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-left: 3px solid transparent;
   color: var(--color-text-tertiary);
   text-decoration: none;
   font-weight: 500;
@@ -104,12 +105,13 @@
 }
 
 .navLinkActive {
-  background-color: rgba(0, 217, 230, 0.1);
+  background: linear-gradient(90deg, rgba(0, 217, 230, 0.15), transparent);
+  border-left: 3px solid var(--color-primary);
   color: var(--color-primary);
 }
 
 .navLinkActive:hover {
-  background-color: rgba(0, 217, 230, 0.15);
+  background: linear-gradient(90deg, rgba(0, 217, 230, 0.2), transparent);
   color: var(--color-primary-hover);
 }
 

@@ -110,31 +110,36 @@
 }
 
 .kanbanBoard {
-  display: flex;
-  gap: var(--spacing-lg);
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+  align-items: flex-start;
+  width: 100%;
+  height: calc(100vh - 200px); /* Fill remaining height */
   padding-bottom: var(--spacing-lg);
-  flex: 1;
 }
 
 .kanbanColumn {
-  flex: 0 0 320px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  min-height: 200px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
 }
 
-.columnHeader {
+.kanbanColumnTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 4px;
-}
-
-.columnHeader h3 {
-  font-size: 0.95rem;
-  color: var(--color-primary);
-  font-weight: 500;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid rgba(0, 217, 230, 0.2);
 }
 
 .moreBtn {
@@ -151,23 +156,41 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  overflow-y: auto;
+  flex: 1;
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s ease;
+}
+
+.cardListDraggingOver {
+  background-color: rgba(0, 217, 230, 0.05);
 }
 
 .jobCard {
-  background-color: rgba(19, 19, 32, 0.6);
-  border: 1px solid rgba(0, 217, 230, 0.5);
+  background: rgba(9, 9, 20, 0.6);
+  border: 1px solid rgba(0, 217, 230, 0.2);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  cursor: grab;
+  transition: all 0.2s ease;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s;
+  gap: var(--spacing-sm);
 }
 
 .jobCard:hover {
   border-color: var(--color-primary);
   box-shadow: 0 0 10px rgba(0, 217, 230, 0.2);
+  transform: translateY(-2px);
+}
+
+.jobHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .jobTitle {
@@ -175,6 +198,26 @@
   color: var(--color-text-primary);
   line-height: 1.4;
   font-weight: 500;
+  flex: 1;
+}
+
+.editBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.editBtn:hover {
+  color: var(--color-primary);
+  background: rgba(0, 217, 230, 0.1);
 }
 
 .jobDetails {
@@ -185,15 +228,22 @@
   color: var(--color-text-tertiary);
 }
 
-.assignee {
+.cardAssignee {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
 }
 
-.budget {
-  color: var(--color-text-primary);
-  font-weight: 500;
+.budgetBadge {
+  background: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(0, 217, 230, 0.3);
 }
 
 .progressSection {
@@ -208,10 +258,11 @@
 }
 
 .progressBar {
-  height: 4px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  height: 6px;
+  background: rgba(0, 217, 230, 0.15);
+  border-radius: 3px;
   overflow: hidden;
+  position: relative;
 }
 
 .progressFill {
@@ -244,18 +295,96 @@
   margin-left: 0;
 }
 
+.cardAvatarText {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--color-primary);
+  background-color: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+.suggestionsDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #0b0c16;
+  border: 1px solid var(--color-primary);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.suggestionItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.suggestionItem:hover {
+  background-color: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+}
+
 @media (max-width: 768px) {
   .pageHeader {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
   
   .headerActions {
+    flex-direction: column;
     width: 100%;
-    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    width: 100%;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .filterBox {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+  }
+
+  .filterSelect {
+    width: 100%;
   }
   
   .primaryBtn {
     width: 100%;
+  }
+
+  .kanbanBoard {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    height: auto;
+    min-height: calc(100vh - 300px);
+  }
+
+  .kanbanColumn {
+    flex: 0 0 85vw;
+    scroll-snap-align: center;
   }
 }

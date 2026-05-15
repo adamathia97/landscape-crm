@@ -1,0 +1,48 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 217, 230, 0.2);
+}
+
+.input[type="date"] {
+  color-scheme: dark;
+}
+
+.input option {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* Hide spin buttons for number inputs to match theme */
+.input[type="number"]::-webkit-inner-spin-button, 
+.input[type="number"]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
