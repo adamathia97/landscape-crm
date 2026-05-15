@@ -36,15 +36,18 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterAssignee, setFilterAssignee] = useState<string>("All");
 
-  const dynamicAssignees = Array.from(new Set(jobs.map(j => j.assignee).filter(Boolean)));
-  const ASSIGNEES = Array.from(new Set([
-    "L. Chen", "K. Patel", "J. Rodriguez", 
-    "S. Kim", "A. Lee", "P. Singh", "M. Wong", 
-    "T. Davis", "R. Garcia", ...dynamicAssignees
-  ])).filter(a => a !== "Unassigned");
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
+    fetch("/api/team")
+      .then(res => res.json())
+      .then(data => {
+        if (data.team) {
+          setTeamMembers(data.team.map((m: any) => m.name));
+        }
+      })
+      .catch(err => console.error("Error fetching team", err));
     fetch("/api/jobs")
       .then(res => res.json())
       .then(data => {
@@ -271,7 +274,7 @@ export default function Dashboard() {
               }}
             >
               <option value="All" style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>All Assignees</option>
-              {ASSIGNEES.map(a => (
+              {teamMembers.map(a => (
                 <option key={a} value={a} style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>{a}</option>
               ))}
               <option value="Unassigned" style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>Unassigned</option>
@@ -372,9 +375,9 @@ export default function Dashboard() {
               onFocus={() => setShowAssignees(true)}
               onBlur={() => setTimeout(() => setShowAssignees(false), 200)}
             />
-            {showAssignees && (
+            {showAssignees && teamMembers.length > 0 && (
               <div className={styles.suggestionsDropdown}>
-                {ASSIGNEES.filter(a => a.toLowerCase().includes(newJobAssignee.toLowerCase())).map(a => (
+                {teamMembers.filter(a => a.toLowerCase().includes(newJobAssignee.toLowerCase())).map(a => (
                   <div 
                     key={a} 
                     className={styles.suggestionItem}

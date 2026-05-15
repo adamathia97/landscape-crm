@@ -1,0 +1,454 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.pageTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.companyName {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.divider {
+  color: var(--color-text-tertiary);
+  font-size: 1.25rem;
+}
+
+.pageTitle {
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+/* View Toggle */
+.viewToggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggleBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.toggleBtn:hover {
+  color: var(--color-text-primary);
+}
+
+.toggleBtnActive {
+  background: rgba(0, 217, 230, 0.15);
+  color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(0, 217, 230, 0.2);
+}
+
+.toggleBtnActive:hover {
+  color: var(--color-primary);
+}
+
+/* Common Container styling */
+.contentArea {
+  flex: 1;
+  background: rgba(9, 9, 20, 0.6);
+  border: 1px solid rgba(0, 217, 230, 0.2);
+  border-radius: var(--radius-lg);
+  overflow-y: auto;
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+/* List View */
+.listSection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.taskCount {
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+  gap: var(--spacing-md);
+}
+
+.taskItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(0, 217, 230, 0.3);
+}
+
+.taskItemCompleted {
+  opacity: 0.6;
+}
+
+.taskItemCompleted .taskTitle {
+  text-decoration: line-through;
+  color: var(--color-text-tertiary);
+}
+
+.checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-text-tertiary);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.checkbox:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(0, 217, 230, 0.4);
+}
+
+.checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid #0b0c16;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.taskDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.taskTitle {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.taskMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.taskAssignee {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 217, 230, 0.1);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+.taskDate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.overdue {
+  color: #ff4d4f;
+}
+
+.taskJob {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-tertiary);
+  font-size: 0.75rem;
+}
+
+.taskActions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+}
+
+.iconBtn.deleteBtn:hover {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+}
+
+/* Calendar View */
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.monthNav {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.navBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navBtn:hover {
+  background: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.currentMonth {
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.weekdayHeader {
+  background: rgba(9, 9, 20, 0.9);
+  padding: var(--spacing-sm);
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.calendarDay {
+  background: var(--color-surface);
+  min-height: 100px;
+  padding: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calendarDay.otherMonth {
+  background: rgba(9, 9, 20, 0.6);
+  opacity: 0.5;
+}
+
+.calendarDay.today {
+  background: rgba(0, 217, 230, 0.05);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.dayNumber {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  align-self: flex-end;
+  margin-bottom: 4px;
+}
+
+.calendarDay.today .dayNumber {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.calendarTask {
+  font-size: 0.75rem;
+  background: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+  padding: 4px 6px;
+  border-radius: 4px;
+  border-left: 2px solid var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendarTask:hover {
+  background: rgba(0, 217, 230, 0.2);
+  transform: translateX(2px);
+}
+
+.calendarTask.completed {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-tertiary);
+  border-left-color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .headerActions {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+  }
+  
+  .viewToggle {
+    width: 100%;
+    display: flex;
+  }
+  
+  .toggleBtn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .contentArea {
+    padding: var(--spacing-md);
+  }
+  
+  .taskMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .calendarGrid {
+    overflow-x: auto;
+    display: block; /* Convert to block and allow scroll, or keep grid but min-width */
+  }
+  
+  /* A simple trick to keep the calendar grid readable on mobile is to force a min-width on the container */
+  .calendarWrapper {
+    overflow-x: auto;
+  }
+  
+  .calendarGrid {
+    min-width: 600px;
+  }
+}
+
+.assigneeDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.suggestionItem {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggestionItem:hover {
+  background: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+}
