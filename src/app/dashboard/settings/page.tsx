@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import { CyberButton } from "@/components/ui/CyberButton";
 import { GlassModal } from "@/components/ui/GlassModal";
 import { NeonInput } from "@/components/ui/NeonInput";
+import { NeonSelect } from "@/components/ui/NeonSelect";
 
 type TeamMember = {
   id: string;
@@ -180,21 +181,15 @@ export default function SettingsPage() {
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
-          <div>
-            <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)", marginBottom: "var(--spacing-sm)", display: "block" }}>Role</label>
-            <select 
-              value={role} 
-              onChange={e => setRole(e.target.value)}
-              style={{
-                width: "100%", padding: "var(--spacing-sm) var(--spacing-md)", backgroundColor: "rgba(0, 0, 0, 0.5)",
-                border: "1px solid var(--color-border)", borderRadius: "var(--radius-sm)",
-                color: "var(--color-text-primary)", fontFamily: "var(--font-family-sans)", colorScheme: "dark"
-              }}
-            >
-              <option value="Agent" style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>Agent</option>
-              <option value="Manager" style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>Manager</option>
-            </select>
-          </div>
+          <NeonSelect
+            label="Role"
+            value={role}
+            onChange={setRole}
+            options={[
+              { value: "Agent", label: "Agent" },
+              { value: "Manager", label: "Manager" },
+            ]}
+          />
         </form>
       </GlassModal>
 

@@ -1,0 +1,361 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.pageTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.companyName {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.divider {
+  color: var(--color-text-tertiary);
+  font-size: 1.25rem;
+}
+
+.pageTitle {
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+/* Search & Filters */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-family: var(--font-family-sans);
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 217, 230, 0.15);
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.filterSelect {
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-family: var(--font-family-sans);
+  cursor: pointer;
+  color-scheme: dark;
+  transition: all 0.2s;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* Stats Bar */
+.statsBar {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.statCard {
+  flex: 1;
+  min-width: 140px;
+  background: rgba(9, 9, 20, 0.6);
+  border: 1px solid rgba(0, 217, 230, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.statValue.active {
+  color: #00e5a0;
+}
+
+.statValue.inactive {
+  color: var(--color-text-tertiary);
+}
+
+/* Content Area */
+.contentArea {
+  flex: 1;
+  background: rgba(9, 9, 20, 0.6);
+  border: 1px solid rgba(0, 217, 230, 0.2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Table */
+.tableWrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.table th {
+  background: rgba(9, 9, 20, 0.95);
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(0, 217, 230, 0.15);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  transition: all 0.15s;
+}
+
+.table tbody tr:hover {
+  background: rgba(0, 217, 230, 0.04);
+}
+
+/* Contact Name Cell */
+.contactNameCell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 217, 230, 0.1);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.contactName {
+  font-weight: 500;
+}
+
+.contactId {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+/* Status Badge */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.statusBadge.active {
+  background: rgba(0, 229, 160, 0.1);
+  color: #00e5a0;
+  border: 1px solid rgba(0, 229, 160, 0.3);
+}
+
+.statusBadge.inactive {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.statusBadge.lead {
+  background: rgba(0, 217, 230, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(0, 217, 230, 0.3);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.statusDot.active {
+  background: #00e5a0;
+  box-shadow: 0 0 6px rgba(0, 229, 160, 0.6);
+}
+
+.statusDot.inactive {
+  background: var(--color-text-tertiary);
+}
+
+.statusDot.lead {
+  background: var(--color-primary);
+  box-shadow: 0 0 6px rgba(0, 217, 230, 0.6);
+}
+
+/* Actions */
+.actionBtns {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+}
+
+.iconBtn.deleteBtn:hover {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-tertiary);
+  gap: var(--spacing-md);
+}
+
+.emptyIcon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-text-tertiary);
+  opacity: 0.5;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .statsBar {
+    flex-direction: column;
+  }
+
+  .statCard {
+    min-width: auto;
+  }
+}

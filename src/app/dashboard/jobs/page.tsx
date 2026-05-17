@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import styles from "./page.module.css";
 import globalStyles from "../../page.module.css";
+import { NeonSelect } from "@/components/ui/NeonSelect";
 
 type Job = {
   id: string;
@@ -190,16 +191,13 @@ export default function JobsPage() {
                     Please create a client first before adding a job.
                   </div>
                 ) : (
-                  <select 
-                    className={globalStyles.modalInput}
-                    style={{ marginBottom: 0, marginTop: "4px" }}
-                    value={formData.client}
-                    onChange={(e) => setFormData({...formData, client: e.target.value})}
-                  >
-                    {clients.map(c => (
-                      <option key={c.id} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
+                  <div style={{ marginTop: "4px" }}>
+                    <NeonSelect
+                      value={formData.client}
+                      onChange={v => setFormData({...formData, client: v})}
+                      options={clients.map(c => ({ value: c.name, label: c.name }))}
+                    />
+                  </div>
                 )}
               </div>
 
@@ -214,18 +212,17 @@ export default function JobsPage() {
                 />
               </div>
 
-              <div>
-                <label style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>Status</label>
-                <select 
-                  className={globalStyles.modalInput}
-                  style={{ marginBottom: 0, marginTop: "4px" }}
+              <div style={{ marginTop: "4px" }}>
+                <NeonSelect
+                  label="Status"
                   value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
-                >
-                  <option value="Lead">Lead</option>
-                  <option value="Scheduled">Scheduled</option>
-                  <option value="Completed">Completed</option>
-                </select>
+                  onChange={v => setFormData({...formData, status: v})}
+                  options={[
+                    { value: "Lead", label: "Lead" },
+                    { value: "Scheduled", label: "Scheduled" },
+                    { value: "Completed", label: "Completed" },
+                  ]}
+                />
               </div>
             </div>
 

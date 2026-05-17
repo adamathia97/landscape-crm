@@ -412,18 +412,19 @@
     gap: 4px;
   }
   
-  .calendarGrid {
-    overflow-x: auto;
-    display: block; /* Convert to block and allow scroll, or keep grid but min-width */
-  }
-  
-  /* A simple trick to keep the calendar grid readable on mobile is to force a min-width on the container */
   .calendarWrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .calendarGrid {
     min-width: 600px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .calendarDay {
+    min-height: 70px;
   }
 }
 

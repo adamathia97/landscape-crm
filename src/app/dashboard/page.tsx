@@ -7,6 +7,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { GlassModal } from "@/components/ui/GlassModal";
 import { NeonInput } from "@/components/ui/NeonInput";
 import { CyberButton } from "@/components/ui/CyberButton";
+import { NeonSelect } from "@/components/ui/NeonSelect";
 
 const initialJobs = [
   { id: "mock-1", title: "Project Chimera - Nexus Dynamics", assignee: "L. Chen", budget: "$45k", progress: 65, status: "Lead", avatars: ["a", "b", "c"] },
@@ -37,6 +38,7 @@ export default function Dashboard() {
   const [filterAssignee, setFilterAssignee] = useState<string>("All");
 
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
+  const [clientList, setClientList] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -48,6 +50,14 @@ export default function Dashboard() {
         }
       })
       .catch(err => console.error("Error fetching team", err));
+    fetch("/api/contacts")
+      .then(res => res.json())
+      .then(data => {
+        if (data.contacts) {
+          setClientList(data.contacts.map((c: any) => ({ id: c.id, name: c.name })));
+        }
+      })
+      .catch(err => console.error("Error fetching clients", err));
     fetch("/api/jobs")
       .then(res => res.json())
       .then(data => {
@@ -257,28 +267,16 @@ export default function Dashboard() {
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className={styles.filterBox}>
-            <select 
-              className={styles.filterSelect}
+          <div className={styles.filterBox} style={{ minWidth: "180px" }}>
+            <NeonSelect
               value={filterAssignee}
-              onChange={e => setFilterAssignee(e.target.value)}
-              style={{
-                background: "transparent",
-                color: "var(--color-primary)",
-                border: "none",
-                outline: "none",
-                fontFamily: "var(--font-family-sans)",
-                cursor: "pointer",
-                paddingRight: "8px",
-                colorScheme: "dark"
-              }}
-            >
-              <option value="All" style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>All Assignees</option>
-              {teamMembers.map(a => (
-                <option key={a} value={a} style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>{a}</option>
-              ))}
-              <option value="Unassigned" style={{ background: "var(--color-surface)", color: "var(--color-text-primary)" }}>Unassigned</option>
-            </select>
+              onChange={setFilterAssignee}
+              options={[
+                { value: "All", label: "All Assignees" },
+                ...teamMembers.map(a => ({ value: a, label: a })),
+                { value: "Unassigned", label: "Unassigned" },
+              ]}
+            />
           </div>
           <CyberButton onClick={openAddModal}>
             Add New Project
@@ -358,43 +356,29 @@ export default function Dashboard() {
         <form id="jobForm" onSubmit={handleSaveProject} style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-lg)" }}>
           <NeonInput 
             placeholder="Project Title" 
+            label="Project Title"
             required 
             value={newJobTitle}
             onChange={e => setNewJobTitle(e.target.value)}
           />
-          <NeonInput 
-            placeholder="Client Name" 
+          <NeonSelect
+            label="Client"
+            placeholder="Select a client"
             value={newJobClient}
-            onChange={e => setNewJobClient(e.target.value)}
+            onChange={setNewJobClient}
+            options={clientList.map(c => ({ value: c.name, label: c.name }))}
           />
-          <div style={{ position: "relative" }}>
-            <NeonInput 
-              placeholder="Assignee (e.g. L. Chen)" 
-              value={newJobAssignee}
-              onChange={e => setNewJobAssignee(e.target.value)}
-              onFocus={() => setShowAssignees(true)}
-              onBlur={() => setTimeout(() => setShowAssignees(false), 200)}
-            />
-            {showAssignees && teamMembers.length > 0 && (
-              <div className={styles.suggestionsDropdown}>
-                {teamMembers.filter(a => a.toLowerCase().includes(newJobAssignee.toLowerCase())).map(a => (
-                  <div 
-                    key={a} 
-                    className={styles.suggestionItem}
-                    onClick={() => {
-                      setNewJobAssignee(a);
-                      setShowAssignees(false);
-                    }}
-                  >
-                    {a}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <NeonSelect
+            label="Assignee"
+            placeholder="Select an assignee"
+            value={newJobAssignee}
+            onChange={setNewJobAssignee}
+            options={teamMembers.map(a => ({ value: a, label: a }))}
+          />
           <NeonInput 
+            label="Budget"
             type="number" 
-            placeholder="Budget (in thousands, e.g. 45 for $45k)" 
+            placeholder="e.g. 45 for $45k" 
             min="0"
             step="1"
             value={newJobBudget}

@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { DynamoDBDocumentClient, ScanCommand, PutCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
-import { client } from "@/lib/aws";
-import { v4 as uuidv4 } from "uuid";
+import { docClient } from "@/lib/aws";
 
-const docClient = DynamoDBDocumentClient.from(client);
 const TABLE_NAME = "TerraCRM_Team";
 
 export async function GET() {
@@ -20,7 +18,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const newMember = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       name: body.name || "Unnamed Agent",
       email: body.email || "",
       role: body.role || "Agent",

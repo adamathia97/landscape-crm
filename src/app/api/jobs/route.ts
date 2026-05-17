@@ -1,8 +1,63 @@
 import { NextResponse } from "next/server";
-import { ScanCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { ScanCommand, PutCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { docClient } from "@/lib/aws";
 
 const TABLE_NAME = "TerraCRM_Jobs";
+const CLIENTS_TABLE = "TerraCRM_Clients";
+
+/**
+ * Sync a client's status based on their project statuses.
+ * Priority: Scheduled → "Active", Lead → "Lead", All Completed → "Inactive"
+ */
+async function syncClientStatus(clientName: string) {
+  if (!clientName) return;
+
+  try {
+    // 1. Find all jobs for this client
+    const jobsRes = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+    const clientJobs = (jobsRes.Items || []).filter((j: any) => j.client === clientName);
+
+    // 2. Determine the derived status
+    let derivedStatus: string;
+    if (clientJobs.length === 0) {
+      // No projects — don't change anything
+      return;
+    }
+
+    const hasScheduled = clientJobs.some((j: any) => j.status === "Scheduled");
+    const hasLead = clientJobs.some((j: any) => j.status === "Lead" || j.status === "Leads");
+    const allCompleted = clientJobs.every((j: any) => j.status === "Completed");
+
+    if (hasScheduled) {
+      derivedStatus = "Active";
+    } else if (hasLead) {
+      derivedStatus = "Lead";
+    } else if (allCompleted) {
+      derivedStatus = "Inactive";
+    } else {
+      return; // Unknown state, don't change
+    }
+
+    // 3. Find the client record by name
+    const clientsRes = await docClient.send(new ScanCommand({ TableName: CLIENTS_TABLE }));
+    const clientRecord = (clientsRes.Items || []).find((c: any) => c.name === clientName);
+
+    if (!clientRecord) return;
+
+    // 4. Update the client status if it changed
+    if (clientRecord.status !== derivedStatus) {
+      await docClient.send(new UpdateCommand({
+        TableName: CLIENTS_TABLE,
+        Key: { id: clientRecord.id },
+        UpdateExpression: "set #s = :s",
+        ExpressionAttributeNames: { "#s": "status" },
+        ExpressionAttributeValues: { ":s": derivedStatus },
+      }));
+    }
+  } catch (err) {
+    console.error("syncClientStatus error:", err);
+  }
+}
 
 export async function GET() {
   try {
@@ -43,6 +98,10 @@ export async function POST(request: Request) {
     });
 
     await docClient.send(command);
+
+    // Sync client status after creating a project
+    await syncClientStatus(item.client);
+
     return NextResponse.json({ message: "Job created", job: item }, { status: 201 });
   } catch (error) {
     console.error("DynamoDB POST Error:", error);
@@ -83,14 +142,24 @@ export async function PATCH(request: Request) {
     });
 
     const response = await docClient.send(command);
+
+    // Sync client status after updating a project
+    const updatedJob = response.Attributes;
+    if (updatedJob?.client) {
+      await syncClientStatus(updatedJob.client);
+    }
+    // If the client name was changed, also sync the old client
+    if (client !== undefined && updatedJob?.client !== client) {
+      // The old client name might need to be looked up from the previous state
+      // but since we already have the new state, we handle the new client above
+    }
+
     return NextResponse.json({ message: "Job updated", job: response.Attributes });
   } catch (error) {
     console.error("DynamoDB PATCH Error:", error);
     return NextResponse.json({ error: "Failed to update job" }, { status: 500 });
   }
 }
-
-import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 
 export async function DELETE(request: Request) {
   try {
@@ -101,12 +170,23 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
 
+    // Look up the job first to get the client name for syncing
+    const allJobs = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+    const jobToDelete = (allJobs.Items || []).find((j: any) => j.id === id);
+    const clientName = jobToDelete?.client;
+
     const command = new DeleteCommand({
       TableName: TABLE_NAME,
       Key: { id },
     });
 
     await docClient.send(command);
+
+    // Sync client status after deleting a project
+    if (clientName) {
+      await syncClientStatus(clientName);
+    }
+
     return NextResponse.json({ message: "Job deleted successfully" });
   } catch (error) {
     console.error("DynamoDB DELETE Error:", error);
